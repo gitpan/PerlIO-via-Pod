@@ -1,3 +1,7 @@
+0.03	13 August 2003
+	Cleaned up Makefile.PL and updated copyright info.  Made sure the
+	test-suite runs with strict and warnings enabled.
+
 0.02	23 July 2002
 	Changed pod matching logic from m/^=\w/ to m/^=[a-zA-Z]/, which should
 	conform better to the official POD blocks definition.  Suggested by

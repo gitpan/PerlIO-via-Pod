@@ -6,3 +6,4 @@ VERSION
 Makefile.PL
 lib/PerlIO/via/Pod.pm
 t/Pod.t
+META.yml                                Module meta-data (added by MakeMaker)

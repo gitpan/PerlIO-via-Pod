@@ -11,9 +11,8 @@ EOD
 
 WriteMakefile (
  NAME		=> "PerlIO::via::Pod",
- ($[ >= 5.005) ?
- (AUTHOR	=> 'Elizabeth Mattijsen (liz@dijkmat.nl)',
-  ABSTRACT	=> 'PerlIO Layer for extracting plain old documentation') : (),
+ AUTHOR		=> 'Elizabeth Mattijsen (liz@dijkmat.nl)',
+ ABSTRACT	=> 'PerlIO Layer for extracting plain old documentation',
  VERSION_FROM	=> 'lib/PerlIO/via/Pod.pm',
  PREREQ_PM	=> {
                    },
