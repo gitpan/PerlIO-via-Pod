@@ -3,7 +3,7 @@ package PerlIO::via::Pod;
 # Set the version info
 # Make sure we do things by the book from now on
 
-$VERSION = '0.03';
+$VERSION = '0.04';
 use strict;
 
 # Satisfy -require-
@@ -106,6 +106,10 @@ PerlIO::via::Pod - PerlIO layer for extracting plain old documentation
 This module implements a PerlIO layer that extracts plain old documentation
 (pod) on input B<and> on output.  It is intended as a development tool only,
 but may have uses outside of development.
+
+=head1 REQUIRED MODULES
+
+ (none)
 
 =head1 EXAMPLES
 
