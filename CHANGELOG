@@ -1,2 +1,7 @@
+0.02	23 July 2002
+	Changed pod matching logic from m/^=\w/ to m/^=[a-zA-Z]/, which should
+	conform better to the official POD blocks definition.  Suggested by
+	Sean M. Burke.
+
 0.01	22 July 2002
 	First version.
