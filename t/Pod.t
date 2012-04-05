@@ -85,3 +85,4 @@ ok( close( $in ),			'close reading handle pod' );
 # Remove whatever we created now
 
 ok( unlink( $file ),			"remove test file '$file'" );
+1 while unlink $file; # multiversioned filesystems

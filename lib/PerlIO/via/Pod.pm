@@ -1,20 +1,18 @@
 package PerlIO::via::Pod;
 
-# Set the version info
-# Make sure we do things by the book from now on
+$VERSION= '0.05';
 
-$VERSION = '0.04';
+# be as struct as possible
 use strict;
 
-# Satisfy -require-
-
+# satisfy -require-
 1;
 
-#-----------------------------------------------------------------------
-
-# Subroutines for standard Perl features
-
-#-----------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#
+# Standard Perl features
+#
+#-------------------------------------------------------------------------------
 #  IN: 1 class to bless with
 #      2 mode string (ignored)
 #      3 file handle of PerlIO layer below (ignored)
@@ -22,40 +20,37 @@ use strict;
 
 sub PUSHED { 
 
-# Die now if strange mode
-# Create the object with the right fields
-
-#    die "Can only read or write with extracting pod" unless $_[1] =~ m#^[rw]$#;
-    bless {inpod => 0},$_[0];
+    # create the object with the right attributes
+    return bless { inpod => 0 }, $_[0];
 } #PUSHED
 
-#-----------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #  IN: 1 instantiated object
 #      2 handle to read from
 # OUT: 1 processed string (if any)
 
 sub FILL {
 
-# Create local copy of $_
-# While there are lines to be read from the handle
-#  If we're in what looks like a pod line
-#   Return now if it is not an end-pod line, setting flag on the fly
-#  Elseif we're now in pod
-#   Return the line
-# Return indicating end reached
-
+    # process all lines
     local( $_ );
-    while (defined( $_ = readline( $_[1] ) )) {
-	if (m#^=[a-zA-Z]#) {
-            return $_ if $_[0]->{'inpod'} = !m#^=cut#;
-        } elsif ($_[0]->{'inpod'}) {
+    while ( defined( $_= readline( $_[1] ) )) {
+
+        # pod, but not the end of it
+	if ( m#^=[a-zA-Z]# ) {
+            return $_ if $_[0]->{inpod}= !m#^=cut#;
+        }
+
+        # still in pod
+        elsif ($_[0]->{inpod}) {
             return $_;
         }
     }
-    undef;
+
+    # we're done
+    return undef;
 } #FILL
 
-#-----------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #  IN: 1 instantiated object
 #      2 buffer to be written
 #      3 handle to write to
@@ -63,27 +58,26 @@ sub FILL {
 
 sub WRITE {
 
-# For all of the lines in this bunch (includes delimiter at end)
-#  If it looks like a pod line
-#   If it is not an end pod, setting flag on the fly
-#    Print the line, return now if failed
-#  Elseif we're in pod now
-#   Print the line, return now if failed
-# Return total number of octets handled
+    # all lines
+    foreach ( split( m#(?<=$/)#, $_[1] ) ) {
 
-    foreach (split( m#(?<=$/)#,$_[1] )) {
-	if (m#^=[a-zA-Z]#) {
-            if ($_[0]->{'inpod'} = !m#^=cut#) {
-                return -1 unless print {$_[2]} $_;
+        # not at end of pod
+	if ( m#^=[a-zA-Z]# ) {
+            if ($_[0]->{inpod} = !m#^=cut#) {
+                return -1 if !print { $_[2] } $_;
             }
-        } elsif ($_[0]->{'inpod'}) {
-            return -1 unless print {$_[2]} $_;
+        }
+
+        # still in pod
+        elsif ( $_[0]->{inpod} ) {
+            return -1 if !print { $_[2] } $_;
         }
     }
-    length( $_[1] );
+
+    return length( $_[1] );
 } #WRITE
 
-#-----------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 __END__
 
@@ -95,11 +89,15 @@ PerlIO::via::Pod - PerlIO layer for extracting plain old documentation
 
  use PerlIO::via::Pod;
 
- open( my $in,'<:via(Pod)','file.pm' )
+ open( my $in, '<:via(Pod)', 'file.pm' )
   or die "Can't open file.pm for reading: $!\n";
  
- open( my $out,'>:via(Pod)','file.pm' )
+ open( my $out, '>:via(Pod)', 'file.pm' )
   or die "Can't open file.pm for writing: $!\n";
+
+=head1 VERSION
+
+This documentation describes version 0.05.
 
 =head1 DESCRIPTION
 
@@ -130,8 +128,8 @@ L<PerlIO::via>, L<PerlIO::via::UnPod> and any other PerlIO::via modules on CPAN.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2002-2003 Elizabeth Mattijsen.  All rights reserved.  This
-library is free software; you can redistribute it and/or modify it under
+Copyright (c) 2002, 2003, 2004, 2012 Elizabeth Mattijsen.  All rights reserved.
+This library is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
 
 =cut
